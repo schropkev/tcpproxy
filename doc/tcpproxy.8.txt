@@ -1,0 +1,188 @@
+tcpproxy(8)
+===========
+
+NAME
+----
+
+tcpproxy - IPv4/IPv6 tcp connection proxy
+
+
+SYNOPSIS
+--------
+
+....
+tcpproxy
+  [ -h|--help ]
+  [ -D|--nodaemonize ]
+  [ -u|--username <username> ]
+  [ -g|--groupname <groupname> ]
+  [ -C|--chroot <path> ]
+  [ -P|--write-pid <filename> ]
+  [ -L|--log <target>:<level>[,<param1>[,<param2>[..]]] ]
+  [ -U|--debug ]
+  [ -l|--local-addr <host> ]
+  [ -t|--local-resolv (ipv4|4|ipv6|6) ]
+  [ -p|--local-port <service> ]
+  [ -r|--remote-addr <host> ]
+  [ -R|--remote-resolv (ipv4|4|ipv6|6) ]
+  [ -o|--remote-port <service> ]
+  [ -s|--source-addr <host> ]
+  [ -b|--buffer-size <size> ]
+  [ -c|--config <file> ]
+....
+
+
+DESCRIPTION
+-----------
+
+*tcpproxy* is a simple tcp connection proxy which combines the
+features of rinetd and 6tunnel. *tcpproxy* supports IPv4 and
+IPv6 and also supports connections from IPv6 to IPv4 endpoints
+and vice versa.
+
+OPTIONS
+-------
+
+The following options can be passed to the *tcpproxy* daemon:
+
+*-D, --nodaemonize*::
+   This option instructs *tcpproxy* to run in foreground
+   instead of becoming a daemon which is the default.
+
+*-u, --username <username>*::
+   run as this user. If no group is specified (*-g*) the default group of
+   the user is used. The default is to not drop privileges.
+
+*-g, --groupname <groupname>*::
+   run as this group. If no username is specified (*-u*) this gets ignored.
+   The default is to not drop privileges.
+
+*-C, --chroot <path>*::
+   Instruct *tcpproxy* to run in a chroot jail. The default is
+   to not run in chroot.
+
+*-P, --write-pid <filename>*::
+   Instruct *tcpproxy* to write it's pid to this file. The default is
+   to not create a pid file.
+
+*-L, --log <target>:<level>[,<param1>[,<param2>[..]]]*::
+   add log target to logging system. This can be invoked several times
+   in order to log to different targets at the same time. Every target
+   has its own log level which is a number between 0 and 5. Where 0 means
+   disabling log and 5 means debug messages are enabled. +
+   The file target can be used more than once with different levels.
+   If no target is provided at the command line a single target with the
+   config *syslog:3,tcpproxy,daemon* is added. +
+   The following targets are supported:
+
+   *syslog*;; log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+   *file*;; log to file, parameters <level>[,<path>]
+   *stdout*;; log to standard output, parameters <level>
+   *stderr*;; log to standard error, parameters <level>
+
+*-U, --debug*::
+   This option instructs *tcpproxy* to run in debug mode. It implicits *-D*
+   (don't daemonize) and adds a log target with the configuration
+   *stdout:5* (logging with maximum level). In future releases there might
+   be additional output when this option is supplied.
+
+*-l, --local-addr <host>*::
+   The local address to bind to. By default *tcpproxy* will listen on any interface
+   (IPv6 and IPv4).
+
+*-t|--local-resolv (ipv4|4|ipv6|6)*::
+   When resolving the local address (see above) use only IPv4 or IPv6. The default is
+   to resolv both.
+
+*-p, --local-port <service>*::
+   The local port to bind to. By default there is no port defined in which case
+   *tcpproxy* will try to read the configuration file.
+
+*-r, --remote-addr <host>*::
+   The remote address to connect to. Unless the configuration file should be used this
+   must be set to a valid address or hostname.
+
+*-R|--remote-resolv (ipv4|4|ipv6|6)*::
+   When resolving the remote address (see above) use only IPv4 or IPv6. The default is
+   to resolv both. Mind that this also effects resolving of the source address (see below)
+   as the remote and source addresses must be of the same protocol familiy.
+
+*-o, --remote-port <service>*::
+   The remote port to connect to. Unless the configuration file should be used this
+   must be set to a valid port or servicename.
+
+*-s, --source-addr <host>*::
+   Instruct tcpproxy to use this source address for connections to *-R|--remote-address*.
+   By default *tcpproxy* uses the default source address for the defined remote host.
+
+*-b, --buffer-size <size>*::
+   The size of the transmit buffers to use. *tcpproxy* will allocate two buffers of this
+   size for any client which is connected. By default a value of 10Kbytes is used.
+
+*-c, --config <file>*::
+   The path to the configuration file to be used. This is only evaluated if the local port
+   is omitted.
+
+
+CONFIGURATION FILE
+------------------
+
+If the configuratin file is used it should contain one or more of the following stanzas:
+
+....
+listen (*|address|hostname) (port-number|service-name)
+{
+  resolv: (ipv4|ipv6)
+  remote: (address|hostname) (port-number|service-name);
+  remote-resolv: (ipv4|ipv6);
+  source: (address|hostname);
+};
+....
+
+Everything between the curly brackets except for the *remote* parameter may be omitted.
+
+
+SIGNALS
+-------
+
+After receiving the HUP signal *tcpproxy* tries to reload the configuration file. It only
+reopens a listen socket if the local address and or port has changed. Therefore reloading the
+configuration after the daemon has dropped privileges is safe as long as there are no changes
+in the local address and port. However this is only of concern if any of the listen ports is
+a privileged port (<1024). If there is a syntax error at the configuration file all changes
+are discarded.
+On SIGUSR1 *tcpproxy* prints some information about the listening sockets and after SIGUSR2
+information about open client connections is printed. This is sent to all configured log
+targets at a level of 3.
+
+
+BUGS
+----
+Most likely there are some bugs in *tcpproxy*. If you find a bug, please let
+the developers know at tcpproxy@spreadspace.org. Of course, patches are preferred.
+
+
+SEE ALSO
+--------
+rinetd(8)
+
+
+AUTHORS
+-------
+
+Christian Pointner <equinox@spreadspace.org>
+
+
+RESOURCES
+---------
+
+Main web site: http://www.spreadspace.org/tcpproxy/
+
+
+COPYING
+-------
+
+Copyright \(C) 2010-2015 Christian Pointner. This  program is  free
+software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or any later version.

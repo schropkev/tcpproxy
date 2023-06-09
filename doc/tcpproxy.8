@@ -1,0 +1,225 @@
+'\" t
+.\"     Title: tcpproxy
+.\"    Author: [see the "AUTHORS" section]
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 05/13/2015
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "TCPPROXY" "8" "05/13/2015" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+tcpproxy \- IPv4/IPv6 tcp connection proxy
+.SH "SYNOPSIS"
+.sp
+.nf
+\fBtcpproxy\fR
+  [ \fB\-h|\-\-help\fR ]
+  [ \fB\-D|\-\-nodaemonize\fR ]
+  [ \fB\-u|\-\-username\fR <username> ]
+  [ \fB\-g|\-\-groupname\fR <groupname> ]
+  [ \fB\-C|\-\-chroot\fR <path> ]
+  [ \fB\-P|\-\-write\-pid\fR <filename> ]
+  [ \fB\-L|\-\-log\fR <target>:<level>[,<param1>[,<param2>[\&.\&.]]] ]
+  [ \fB\-U|\-\-debug\fR ]
+  [ \fB\-l|\-\-local\-addr\fR <host> ]
+  [ \fB\-t|\-\-local\-resolv\fR (ipv4|4|ipv6|6) ]
+  [ \fB\-p|\-\-local\-port\fR <service> ]
+  [ \fB\-r|\-\-remote\-addr\fR <host> ]
+  [ \fB\-R|\-\-remote\-resolv\fR (ipv4|4|ipv6|6) ]
+  [ \fB\-o|\-\-remote\-port\fR <service> ]
+  [ \fB\-s|\-\-source\-addr\fR <host> ]
+  [ \fB\-b|\-\-buffer\-size\fR <size> ]
+  [ \fB\-c|\-\-config\fR <file> ]
+.fi
+.SH "DESCRIPTION"
+.sp
+\fBtcpproxy\fR is a simple tcp connection proxy which combines the features of rinetd and 6tunnel\&. \fBtcpproxy\fR supports IPv4 and IPv6 and also supports connections from IPv6 to IPv4 endpoints and vice versa\&.
+.SH "OPTIONS"
+.sp
+The following options can be passed to the \fBtcpproxy\fR daemon:
+.PP
+\fB\-D, \-\-nodaemonize\fR
+.RS 4
+This option instructs
+\fBtcpproxy\fR
+to run in foreground instead of becoming a daemon which is the default\&.
+.RE
+.PP
+\fB\-u, \-\-username <username>\fR
+.RS 4
+run as this user\&. If no group is specified (\fB\-g\fR) the default group of the user is used\&. The default is to not drop privileges\&.
+.RE
+.PP
+\fB\-g, \-\-groupname <groupname>\fR
+.RS 4
+run as this group\&. If no username is specified (\fB\-u\fR) this gets ignored\&. The default is to not drop privileges\&.
+.RE
+.PP
+\fB\-C, \-\-chroot <path>\fR
+.RS 4
+Instruct
+\fBtcpproxy\fR
+to run in a chroot jail\&. The default is to not run in chroot\&.
+.RE
+.PP
+\fB\-P, \-\-write\-pid <filename>\fR
+.RS 4
+Instruct
+\fBtcpproxy\fR
+to write it\(cqs pid to this file\&. The default is to not create a pid file\&.
+.RE
+.PP
+\fB\-L, \-\-log <target>:<level>[,<param1>[,<param2>[\&.\&.]]]\fR
+.RS 4
+add log target to logging system\&. This can be invoked several times in order to log to different targets at the same time\&. Every target has its own log level which is a number between 0 and 5\&. Where 0 means disabling log and 5 means debug messages are enabled\&.
+
+The file target can be used more than once with different levels\&. If no target is provided at the command line a single target with the config
+\fBsyslog:3,tcpproxy,daemon\fR
+is added\&.
+
+The following targets are supported:
+.PP
+\fBsyslog\fR
+.RS 4
+log to syslog daemon, parameters <level>[,<logname>[,<facility>]]
+.RE
+.PP
+\fBfile\fR
+.RS 4
+log to file, parameters <level>[,<path>]
+.RE
+.PP
+\fBstdout\fR
+.RS 4
+log to standard output, parameters <level>
+.RE
+.PP
+\fBstderr\fR
+.RS 4
+log to standard error, parameters <level>
+.RE
+.RE
+.PP
+\fB\-U, \-\-debug\fR
+.RS 4
+This option instructs
+\fBtcpproxy\fR
+to run in debug mode\&. It implicits
+\fB\-D\fR
+(don\(cqt daemonize) and adds a log target with the configuration
+\fBstdout:5\fR
+(logging with maximum level)\&. In future releases there might be additional output when this option is supplied\&.
+.RE
+.PP
+\fB\-l, \-\-local\-addr <host>\fR
+.RS 4
+The local address to bind to\&. By default
+\fBtcpproxy\fR
+will listen on any interface (IPv6 and IPv4)\&.
+.RE
+.PP
+\fB\-t|\-\-local\-resolv (ipv4|4|ipv6|6)\fR
+.RS 4
+When resolving the local address (see above) use only IPv4 or IPv6\&. The default is to resolv both\&.
+.RE
+.PP
+\fB\-p, \-\-local\-port <service>\fR
+.RS 4
+The local port to bind to\&. By default there is no port defined in which case
+\fBtcpproxy\fR
+will try to read the configuration file\&.
+.RE
+.PP
+\fB\-r, \-\-remote\-addr <host>\fR
+.RS 4
+The remote address to connect to\&. Unless the configuration file should be used this must be set to a valid address or hostname\&.
+.RE
+.PP
+\fB\-R|\-\-remote\-resolv (ipv4|4|ipv6|6)\fR
+.RS 4
+When resolving the remote address (see above) use only IPv4 or IPv6\&. The default is to resolv both\&. Mind that this also effects resolving of the source address (see below) as the remote and source addresses must be of the same protocol familiy\&.
+.RE
+.PP
+\fB\-o, \-\-remote\-port <service>\fR
+.RS 4
+The remote port to connect to\&. Unless the configuration file should be used this must be set to a valid port or servicename\&.
+.RE
+.PP
+\fB\-s, \-\-source\-addr <host>\fR
+.RS 4
+Instruct tcpproxy to use this source address for connections to
+\fB\-R|\-\-remote\-address\fR\&. By default
+\fBtcpproxy\fR
+uses the default source address for the defined remote host\&.
+.RE
+.PP
+\fB\-b, \-\-buffer\-size <size>\fR
+.RS 4
+The size of the transmit buffers to use\&.
+\fBtcpproxy\fR
+will allocate two buffers of this size for any client which is connected\&. By default a value of 10Kbytes is used\&.
+.RE
+.PP
+\fB\-c, \-\-config <file>\fR
+.RS 4
+The path to the configuration file to be used\&. This is only evaluated if the local port is omitted\&.
+.RE
+.SH "CONFIGURATION FILE"
+.sp
+If the configuratin file is used it should contain one or more of the following stanzas:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+listen (*|address|hostname) (port\-number|service\-name)
+{
+  resolv: (ipv4|ipv6)
+  remote: (address|hostname) (port\-number|service\-name);
+  remote\-resolv: (ipv4|ipv6);
+  source: (address|hostname);
+};
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Everything between the curly brackets except for the \fBremote\fR parameter may be omitted\&.
+.SH "SIGNALS"
+.sp
+After receiving the HUP signal \fBtcpproxy\fR tries to reload the configuration file\&. It only reopens a listen socket if the local address and or port has changed\&. Therefore reloading the configuration after the daemon has dropped privileges is safe as long as there are no changes in the local address and port\&. However this is only of concern if any of the listen ports is a privileged port (<1024)\&. If there is a syntax error at the configuration file all changes are discarded\&. On SIGUSR1 \fBtcpproxy\fR prints some information about the listening sockets and after SIGUSR2 information about open client connections is printed\&. This is sent to all configured log targets at a level of 3\&.
+.SH "BUGS"
+.sp
+Most likely there are some bugs in \fBtcpproxy\fR\&. If you find a bug, please let the developers know at tcpproxy@spreadspace\&.org\&. Of course, patches are preferred\&.
+.SH "SEE ALSO"
+.sp
+rinetd(8)
+.SH "AUTHORS"
+.sp
+Christian Pointner <equinox@spreadspace\&.org>
+.SH "RESOURCES"
+.sp
+Main web site: http://www\&.spreadspace\&.org/tcpproxy/
+.SH "COPYING"
+.sp
+Copyright (C) 2010\-2015 Christian Pointner\&. This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version\&.

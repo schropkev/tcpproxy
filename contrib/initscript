@@ -1,0 +1,60 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          tcpproxy
+# Required-Start:    $remote_fs $network $named $syslog
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start tcp-proxy daemon at boot time
+# Description:       Enables tcp proxying between ipv4 and ipv6
+### END INIT INFO
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/bin/tcpproxy
+CONFFILE=/etc/tcpproxy.conf
+PIDFILE=/var/run/tcpproxy.pid
+NAME=tcpproxy
+DESC="tcp proxy server"
+DAEMON_ARGS=""
+
+test -x $DAEMON || exit 0
+
+# Include tcpproxy defaults if available
+if [ -f /etc/default/tcpproxy ] ; then
+  . /etc/default/tcpproxy
+fi
+
+. /lib/lsb/init-functions
+
+set -e
+case "$1" in
+  start)
+    echo -n "Starting $DESC"
+    start-stop-daemon --start --quiet --exec $DAEMON -- $DAEMON_ARGS --write-pid $PIDFILE && echo -n " $NAME"
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping $DESC"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --exec $DAEMON && echo -n " $NAME"
+    echo "."
+    ;;
+  reload|force-reload)
+    echo -n "Reloading configuration of $DESC:"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --signal 1 --exec $DAEMON && echo -n " $NAME"
+    echo "."
+    ;;
+  restart)
+    echo -n "Stopping $DESC"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --exec $DAEMON && echo -n " $NAME"
+    echo "."
+    sleep 1
+    echo -n "Starting $DESC"
+    start-stop-daemon --start --quiet --exec $DAEMON -- $DAEMON_ARGS --write-pid $PIDFILE && echo -n " $NAME"
+    echo "."
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$NAME {start|stop|reload|restart|force-reload}"
+    exit 1
+    ;;
+esac
+
+exit 0

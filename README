@@ -1,0 +1,58 @@
+Introduction
+============
+
+tcpproxy is a simple tcp connection proxy which combines the
+features of rinetd and 6tunnel. tcpproxy supports IPv4 and
+IPv6 and also supports connections from IPv6 to IPv4
+endpoints and vice versa.
+
+Dependencies
+============
+
+Linux
+-----
+
+core:
+ build-essential
+ ragel
+
+if you want to rebuild the manpage:
+ asciidoc
+
+
+Installation
+============
+
+Getting the source via subversion:
+----------------------------------
+
+git clone git://git.spreadspace.org/tcpproxy.git
+cd tcpproxy
+
+
+Building from source
+--------------------
+
+# cd src
+# ./configure
+# make
+
+
+Installing
+----------
+
+# sudo make install
+
+This will install tcpproxy under the --prefix defined with configure.
+
+
+Uninstalling
+------------
+
+# sudo make remove
+
+This removes everything except for the config files
+
+# sudo make purge
+
+This also removes the config files

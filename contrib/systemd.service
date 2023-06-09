@@ -1,0 +1,14 @@
+[Unit]
+Description=tcp proxy server
+
+[Service]
+ExecStart=/usr/bin/tcpproxy -u tcpproxy -g tcpproxy -D
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=full
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

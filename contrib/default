@@ -1,0 +1,5 @@
+# tcpproxy configuration
+#
+# see tcpproxy man page for available options
+#
+DAEMON_ARGS="-u tcpproxy -g tcpproxy"

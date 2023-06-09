@@ -1,0 +1,25 @@
+2015.05.14 -- Version 1.2
+
+* added support for systemd
+* fixed exit code after signal
+
+2013.10.07 -- Version 1.1
+
+* fixed build for clang
+
+2010.12.25 -- Version 1.0
+
+* print some info in SIGUSR1 and SIGUSR2
+* fixed problematic usage of strndup at new parser
+
+2010.12.11 -- Version 0.2
+
+* added TCP_NODELAY option for client fd's
+* using async connects now
+* re-reading config file after sig-hup
+* replaced flex/bison by ragel based parser
+
+2010.12.05 -- Version 0.1
+
+* initial release
+
